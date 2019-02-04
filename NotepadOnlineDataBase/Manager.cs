@@ -78,7 +78,6 @@ namespace DataBase
             if (result == ReturnCode.Success)
             {
                 WaitingForConfirm = false;
-                Authorized = true;
                 Authorize(Login, Password);
             }
 
@@ -98,7 +97,6 @@ namespace DataBase
             if (result == ReturnCode.Success)
             {
                 WaitingForConfirm = false;
-                Authorized = true;
                 await AuthorizeAsync(Login, Password);
             }
 
@@ -116,7 +114,6 @@ namespace DataBase
 
             if (result.Item1 == ReturnCode.Success)
             {
-                WaitingForConfirm = false;
                 Authorized = true;
                 Login = login;
                 Password = password;
@@ -137,7 +134,6 @@ namespace DataBase
 
             if (result.Item1 == ReturnCode.Success)
             {
-                WaitingForConfirm = false;
                 Authorized = true;
                 Login = login;
                 Password = password;
@@ -158,7 +154,6 @@ namespace DataBase
 
             if (result.Item1 == ReturnCode.Success)
             {
-                WaitingForConfirm = false;
                 Authorized = true;
                 Login = login;
                 Password = password;
@@ -181,7 +176,6 @@ namespace DataBase
 
             if (result.Item1 == ReturnCode.Success)
             {
-                WaitingForConfirm = false;
                 Authorized = true;
                 Login = login;
                 Password = password;
