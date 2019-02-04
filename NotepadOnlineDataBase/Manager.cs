@@ -164,7 +164,7 @@ namespace DataBase
                 Password = password;
                 Token = token;
             }
-            else if (result.Item1 == ReturnCode.TokenExpired)
+            else if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
                 return Authorize(login, password);
 
             return result.Item1;
@@ -187,7 +187,7 @@ namespace DataBase
                 Password = password;
                 Token = token;
             }
-            else if (result.Item1 == ReturnCode.TokenExpired)
+            else if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
                 return await AuthorizeAsync(login, password);
 
             return result.Item1;
@@ -199,7 +199,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = Instance.GetNames(Token);
-            if (result.Item1 == ReturnCode.TokenExpired)
+            if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
             {
                 Token = Instance.Authorize(Login, Password).Item2;
                 result = Instance.GetNames(Token);
@@ -214,7 +214,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = await Instance.GetNamesAsync(Token);
-            if (result.Item1 == ReturnCode.TokenExpired)
+            if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
             {
                 Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
                 result = await Instance.GetNamesAsync(Token);
@@ -229,7 +229,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = Instance.GetData(Token, name);
-            if (result.Item1 == ReturnCode.TokenExpired)
+            if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
             {
                 Token = Instance.Authorize(Login, Password).Item2;
                 result = Instance.GetData(Token, name);
@@ -244,7 +244,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = await Instance.GetDataAsync(Token, name);
-            if (result.Item1 == ReturnCode.TokenExpired)
+            if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
             {
                 Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
                 result = await Instance.GetDataAsync(Token, name);
@@ -259,7 +259,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = Instance.AddData(Token, name, description, text);
-            if (result == ReturnCode.TokenExpired)
+            if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
                 Token = Instance.Authorize(Login, Password).Item2;
                 result = Instance.AddData(Token, name, description, text);
@@ -274,7 +274,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = await Instance.AddDataAsync(Token, name, description, text);
-            if (result == ReturnCode.TokenExpired)
+            if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
                 Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
                 result = await Instance.AddDataAsync(Token, name, description, text);
@@ -289,7 +289,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = Instance.DelData(Token, name);
-            if (result == ReturnCode.TokenExpired)
+            if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
                 Token = Instance.Authorize(Login, Password).Item2;
                 result = Instance.DelData(Token, name);
@@ -304,7 +304,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = await Instance.DelDataAsync(Token, name);
-            if (result == ReturnCode.TokenExpired)
+            if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
                 Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
                 result = await Instance.DelDataAsync(Token, name);
@@ -319,7 +319,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = Instance.EditName(Token, name, newname);
-            if (result == ReturnCode.TokenExpired)
+            if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
                 Token = Instance.Authorize(Login, Password).Item2;
                 result = Instance.EditName(Token, name, newname);
@@ -334,7 +334,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = await Instance.EditNameAsync(Token, name, newname);
-            if (result == ReturnCode.TokenExpired)
+            if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
                 Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
                 result = await Instance.EditNameAsync(Token, name, newname);
@@ -349,7 +349,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = Instance.EditDescription(Token, name, newdescription);
-            if (result == ReturnCode.TokenExpired)
+            if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
                 Token = Instance.Authorize(Login, Password).Item2;
                 result = Instance.EditDescription(Token, name, newdescription);
@@ -364,7 +364,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = await Instance.EditDescriptionAsync(Token, name, newdescription);
-            if (result == ReturnCode.TokenExpired)
+            if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
                 Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
                 result = await Instance.EditDescriptionAsync(Token, name, newdescription);
@@ -379,7 +379,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = Instance.EditText(Token, name, newtext);
-            if (result == ReturnCode.TokenExpired)
+            if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
                 Token = Instance.Authorize(Login, Password).Item2;
                 result = Instance.EditText(Token, name, newtext);
@@ -394,7 +394,7 @@ namespace DataBase
                 throw new Exception();
 
             var result = await Instance.EditTextAsync(Token, name, newtext);
-            if (result == ReturnCode.TokenExpired)
+            if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
                 Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
                 result = await Instance.EditTextAsync(Token, name, newtext);
