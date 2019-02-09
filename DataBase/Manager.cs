@@ -14,7 +14,7 @@ namespace DataBase
 
         static bool IsLoginValid(string login)
         {
-            return login.Length >= 4 && login.Length <= 40 && Regex.IsMatch(login, @"\S+@\S+\.\S\S+", RegexOptions.IgnoreCase);
+            return Regex.IsMatch(login, @"\S+@\S+\.\S\S+", RegexOptions.IgnoreCase);
         }
 
         static bool IsPasswordValid(string password)
@@ -38,6 +38,7 @@ namespace DataBase
 
             if (result == ReturnCode.Success)
             {
+                Authorized = false;
                 WaitingForConfirm = true;
                 Login = login;
                 Password = password;
@@ -57,6 +58,7 @@ namespace DataBase
 
             if (result == ReturnCode.Success)
             {
+                Authorized = false;
                 WaitingForConfirm = true;
                 Login = login;
                 Password = password;
