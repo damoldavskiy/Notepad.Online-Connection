@@ -165,60 +165,110 @@ namespace DataBase
             return new Tuple<ReturnCode, List<string>>((ReturnCode)result.Value, results);
         }
 
-        public static ReturnCode Register(string login, string password)
+        public static ReturnCode Register(string email, string password)
         {
             var parameters = new Dictionary<string, string>();
-            parameters.Add("@login", login);
+            parameters.Add("@email", email);
             parameters.Add("@password", password);
             return Execute("Register", parameters);
         }
 
-        public static async Task<ReturnCode> RegisterAsync(string login, string password)
+        public static async Task<ReturnCode> RegisterAsync(string email, string password)
         {
             var parameters = new Dictionary<string, string>();
-            parameters.Add("@login", login);
+            parameters.Add("@email", email);
             parameters.Add("@password", password);
             return await ExecuteAsync("Register", parameters);
         }
 
-        public static ReturnCode Confirm(string login, string code)
+        public static ReturnCode ConfirmRegistration(string email, string code)
         {
             var parameters = new Dictionary<string, string>();
-            parameters.Add("@login", login);
+            parameters.Add("@email", email);
             parameters.Add("@code", code);
-            return Execute("Confirm", parameters);
+            return Execute("ConfirmRegistration", parameters);
         }
 
-        public static async Task<ReturnCode> ConfirmAsync(string login, string code)
+        public static async Task<ReturnCode> ConfirmRegistrationAsync(string email, string code)
         {
             var parameters = new Dictionary<string, string>();
-            parameters.Add("@login", login);
+            parameters.Add("@email", email);
             parameters.Add("@code", code);
-            return await ExecuteAsync("Confirm", parameters);
+            return await ExecuteAsync("ConfirmRegistration", parameters);
         }
 
-        public static Tuple<ReturnCode, string> Authorize(string login, string password)
+        public static ReturnCode Recovery(string email)
         {
             var parameters = new Dictionary<string, string>();
-            parameters.Add("@login", login);
+            parameters.Add("@email", email);
+            return Execute("Recovery", parameters);
+        }
+
+        public static async Task<ReturnCode> RecoveryAsync(string email)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("@email", email);
+            return await ExecuteAsync("Recovery", parameters);
+        }
+
+        public static ReturnCode ConfirmRecovery(string email, string newpassword, string code)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("@email", email);
+            parameters.Add("@newpassword", newpassword);
+            parameters.Add("@code", code);
+            return Execute("ConfirmRecovery", parameters);
+        }
+
+        public static async Task<ReturnCode> ConfirmRecoveryAsync(string email, string newpassword, string code)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("@email", email);
+            parameters.Add("@newpassword", newpassword);
+            parameters.Add("@code", code);
+            return await ExecuteAsync("ConfirmRecovery", parameters);
+        }
+
+        public static Tuple<ReturnCode, string> Login(string email, string password)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("@email", email);
             parameters.Add("@password", password);
-            var result = ExecuteGet("Authorize", parameters);
+            var result = ExecuteGet("Login", parameters);
 
             if (result.Item1 != ReturnCode.Success)
                 return new Tuple<ReturnCode, string>(result.Item1, null);
             return new Tuple<ReturnCode, string>(result.Item1, result.Item2.Count > 0 ? result.Item2[0] : null);
         }
 
-        public static async Task<Tuple<ReturnCode, string>> AuthorizeAsync(string login, string password)
+        public static async Task<Tuple<ReturnCode, string>> LoginAsync(string email, string password)
         {
             var parameters = new Dictionary<string, string>();
-            parameters.Add("@login", login);
+            parameters.Add("@email", email);
             parameters.Add("@password", password);
-            var result = await ExecuteGetAsync("Authorize", parameters);
+            var result = await ExecuteGetAsync("Login", parameters);
 
             if (result.Item1 != ReturnCode.Success)
                 return new Tuple<ReturnCode, string>(result.Item1, null);
             return new Tuple<ReturnCode, string>(result.Item1, result.Item2.Count > 0 ? result.Item2[0] : null);
+        }
+
+        public static ReturnCode ChangePassword(string email, string password, string newpassword)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("@email", email);
+            parameters.Add("@password", password);
+            parameters.Add("@newpassword", newpassword);
+            return Execute("ChangePassword", parameters);
+        }
+
+        public static async Task<ReturnCode> ChangePasswordAsync(string email, string password, string newpassword)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("@email", email);
+            parameters.Add("@password", password);
+            parameters.Add("@newpassword", newpassword);
+            return await ExecuteAsync("ChangePassword", parameters);
         }
 
         public static Tuple<ReturnCode, string[]> GetNames(string token)

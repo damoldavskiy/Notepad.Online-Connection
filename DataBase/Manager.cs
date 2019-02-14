@@ -6,15 +6,14 @@ namespace DataBase
 {
     public class Manager
     {
-        public static bool Authorized { get; private set; }
-        public static bool WaitingForConfirm { get; private set; }
-        public static string Login { get; private set; }
+        public static string Email { get; private set; }
         public static string Password { get; private set; }
         public static string Token { get; private set; }
+        public static ManagerStatus Status { get; private set; }
 
-        static bool IsLoginValid(string login)
+        static bool IsEmailValid(string email)
         {
-            return Regex.IsMatch(login, @"\S+@\S+\.\S\S+", RegexOptions.IgnoreCase);
+            return Regex.IsMatch(email, @"\S+@\S+\.\S\S+", RegexOptions.IgnoreCase) && email.Length <= 40;
         }
 
         static bool IsPasswordValid(string password)
@@ -27,97 +26,171 @@ namespace DataBase
             return code.Length == 4 && int.TryParse(code, out int num);
         }
 
-        public static ReturnCode Register(string login, string password)
+        public static ReturnCode Register(string email, string password)
         {
-            if (!IsLoginValid(login))
-                return ReturnCode.IllegalLogin;
+            if (!IsEmailValid(email))
+                return ReturnCode.IllegalEmail;
             if (!IsPasswordValid(password))
                 return ReturnCode.IllegalPassword;
 
-            var result = Instance.Register(login, password);
+            var result = Instance.Register(email, password);
 
             if (result == ReturnCode.Success)
             {
-                Authorized = false;
-                WaitingForConfirm = true;
-                Login = login;
+                Status = ManagerStatus.RegistrationConfirmation;
+                Email = email;
                 Password = password;
             }
 
             return result;
         }
 
-        public static async Task<ReturnCode> RegisterAsync(string login, string password)
+        public static async Task<ReturnCode> RegisterAsync(string email, string password)
         {
-            if (!IsLoginValid(login))
-                return ReturnCode.IllegalLogin;
+            if (!IsEmailValid(email))
+                return ReturnCode.IllegalEmail;
             if (!IsPasswordValid(password))
                 return ReturnCode.IllegalPassword;
 
-            var result = await Instance.RegisterAsync(login, password);
+            var result = await Instance.RegisterAsync(email, password);
 
             if (result == ReturnCode.Success)
             {
-                Authorized = false;
-                WaitingForConfirm = true;
-                Login = login;
+                Status = ManagerStatus.RegistrationConfirmation;
+                Email = email;
                 Password = password;
             }
 
             return result;
         }
 
-        public static ReturnCode Confirm(string code)
+        public static ReturnCode ConfirmRegistration(string code)
         {
-            if (!WaitingForConfirm)
+            if (Status != ManagerStatus.RegistrationConfirmation)
                 throw new Exception();
 
             if (!IsConfirmCodeValid(code))
                 return ReturnCode.IllegalConfirmCode;
 
-            var result = Instance.Confirm(Login, code);
+            var result = Instance.ConfirmRegistration(Email, code);
 
             if (result == ReturnCode.Success)
             {
-                WaitingForConfirm = false;
-                Authorize(Login, Password);
+                Status = ManagerStatus.Idle;
+                Login(Email, Password);
             }
 
             return result;
         }
 
-        public static async Task<ReturnCode> ConfirmAsync(string code)
+        public static async Task<ReturnCode> ConfirmRegistrationAsync(string code)
         {
-            if (!WaitingForConfirm)
+            if (Status != ManagerStatus.RegistrationConfirmation)
                 throw new Exception();
 
             if (!IsConfirmCodeValid(code))
                 return ReturnCode.IllegalConfirmCode;
 
-            var result = await Instance.ConfirmAsync(Login, code);
+            var result = await Instance.ConfirmRegistrationAsync(Email, code);
 
             if (result == ReturnCode.Success)
             {
-                WaitingForConfirm = false;
-                await AuthorizeAsync(Login, Password);
+                Status = ManagerStatus.Idle;
+                await LoginAsync(Email, Password);
             }
 
             return result;
         }
 
-        public static ReturnCode Authorize(string login, string password)
+        public static ReturnCode Recovery(string email, string newpassword)
         {
-            if (!IsLoginValid(login))
-                return ReturnCode.IllegalLogin;
+            if (!IsEmailValid(email))
+                return ReturnCode.IllegalEmail;
+            if (!IsPasswordValid(newpassword))
+                return ReturnCode.IllegalPassword;
+
+            var result = Instance.Recovery(email);
+
+            if (result == ReturnCode.Success)
+            {
+                Status = ManagerStatus.RecoveryConfirmation;
+                Email = email;
+                Password = newpassword;
+            }
+
+            return result;
+        }
+
+        public static async Task<ReturnCode> RecoveryAsync(string email, string newpassword)
+        {
+            if (!IsEmailValid(email))
+                return ReturnCode.IllegalEmail;
+            if (!IsPasswordValid(newpassword))
+                return ReturnCode.IllegalPassword;
+
+            var result = await Instance.RecoveryAsync(email);
+
+            if (result == ReturnCode.Success)
+            {
+                Status = ManagerStatus.RecoveryConfirmation;
+                Email = email;
+                Password = newpassword;
+            }
+
+            return result;
+        }
+
+        public static ReturnCode ConfirmRecovery(string code)
+        {
+            if (Status != ManagerStatus.RecoveryConfirmation)
+                throw new Exception();
+
+            if (!IsConfirmCodeValid(code))
+                return ReturnCode.IllegalConfirmCode;
+
+            var result = Instance.ConfirmRecovery(Email, Password, code);
+
+            if (result == ReturnCode.Success)
+            {
+                Status = ManagerStatus.Idle;
+                Login(Email, Password);
+            }
+
+            return result;
+        }
+
+        public static async Task<ReturnCode> ConfirmRecoveryAsync(string code)
+        {
+            if (Status != ManagerStatus.RecoveryConfirmation)
+                throw new Exception();
+
+            if (!IsConfirmCodeValid(code))
+                return ReturnCode.IllegalConfirmCode;
+
+            var result = await Instance.ConfirmRecoveryAsync(Email, Password, code);
+
+            if (result == ReturnCode.Success)
+            {
+                Status = ManagerStatus.Idle;
+                await LoginAsync(Email, Password);
+            }
+
+            return result;
+        }
+
+        public static ReturnCode Login(string email, string password)
+        {
+            if (!IsEmailValid(email))
+                return ReturnCode.IllegalEmail;
             if (!IsPasswordValid(password))
                 return ReturnCode.IllegalPassword;
 
-            var result = Instance.Authorize(login, password);
+            var result = Instance.Login(email, password);
 
             if (result.Item1 == ReturnCode.Success)
             {
-                Authorized = true;
-                Login = login;
+                Status = ManagerStatus.Ready;
+                Email = email;
                 Password = password;
                 Token = result.Item2;
             }
@@ -125,19 +198,19 @@ namespace DataBase
             return result.Item1;
         }
 
-        public static async Task<ReturnCode> AuthorizeAsync(string login, string password)
+        public static async Task<ReturnCode> LoginAsync(string email, string password)
         {
-            if (!IsLoginValid(login))
-                return ReturnCode.IllegalLogin;
+            if (!IsEmailValid(email))
+                return ReturnCode.IllegalEmail;
             if (!IsPasswordValid(password))
                 return ReturnCode.IllegalPassword;
 
-            var result = await Instance.AuthorizeAsync(login, password);
+            var result = await Instance.LoginAsync(email, password);
 
             if (result.Item1 == ReturnCode.Success)
             {
-                Authorized = true;
-                Login = login;
+                Status = ManagerStatus.Ready;
+                Email = email;
                 Password = password;
                 Token = result.Item2;
             }
@@ -145,10 +218,10 @@ namespace DataBase
             return result.Item1;
         }
 
-        public static ReturnCode Authorize(string login, string password, string token)
+        public static ReturnCode Login(string email, string password, string token)
         {
-            if (!IsLoginValid(login))
-                return ReturnCode.IllegalLogin;
+            if (!IsEmailValid(email))
+                return ReturnCode.IllegalEmail;
             if (!IsPasswordValid(password))
                 return ReturnCode.IllegalPassword;
 
@@ -156,21 +229,21 @@ namespace DataBase
 
             if (result.Item1 == ReturnCode.Success)
             {
-                Authorized = true;
-                Login = login;
+                Status = ManagerStatus.Ready;
+                Email = email;
                 Password = password;
                 Token = token;
             }
             else if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
-                return Authorize(login, password);
+                return Login(email, password);
 
             return result.Item1;
         }
 
-        public static async Task<ReturnCode> AuthorizeAsync(string login, string password, string token)
+        public static async Task<ReturnCode> LoginAsync(string email, string password, string token)
         {
-            if (!IsLoginValid(login))
-                return ReturnCode.IllegalLogin;
+            if (!IsEmailValid(email))
+                return ReturnCode.IllegalEmail;
             if (!IsPasswordValid(password))
                 return ReturnCode.IllegalPassword;
 
@@ -178,26 +251,42 @@ namespace DataBase
 
             if (result.Item1 == ReturnCode.Success)
             {
-                Authorized = true;
-                Login = login;
+                Status = ManagerStatus.Ready;
+                Email = email;
                 Password = password;
                 Token = token;
             }
             else if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
-                return await AuthorizeAsync(login, password);
+                return await LoginAsync(email, password);
 
             return result.Item1;
         }
 
+        public static ReturnCode ChangePassword(string newpassword)
+        {
+            if (!(Status == ManagerStatus.Ready))
+                throw new Exception();
+
+            return Instance.ChangePassword(Email, Password, newpassword);
+        }
+
+        public static async Task<ReturnCode> ChangePasswordAsync(string newpassword)
+        {
+            if (!(Status == ManagerStatus.Ready))
+                throw new Exception();
+
+            return await Instance.ChangePasswordAsync(Email, Password, newpassword);
+        }
+
         public static Tuple<ReturnCode, string[]> GetNames()
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = Instance.GetNames(Token);
             if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
             {
-                Token = Instance.Authorize(Login, Password).Item2;
+                Token = Instance.Login(Email, Password).Item2;
                 result = Instance.GetNames(Token);
             }
 
@@ -206,13 +295,13 @@ namespace DataBase
 
         public static async Task<Tuple<ReturnCode, string[]>> GetNamesAsync()
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = await Instance.GetNamesAsync(Token);
             if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
             {
-                Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
+                Token = (await Instance.LoginAsync(Email, Password)).Item2;
                 result = await Instance.GetNamesAsync(Token);
             }
 
@@ -221,13 +310,13 @@ namespace DataBase
 
         public static Tuple<ReturnCode, string, string> GetData(string name)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = Instance.GetData(Token, name);
             if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
             {
-                Token = Instance.Authorize(Login, Password).Item2;
+                Token = Instance.Login(Email, Password).Item2;
                 result = Instance.GetData(Token, name);
             }
 
@@ -236,13 +325,13 @@ namespace DataBase
 
         public static async Task<Tuple<ReturnCode, string, string>> GetDataAsync(string name)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = await Instance.GetDataAsync(Token, name);
             if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
             {
-                Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
+                Token = (await Instance.LoginAsync(Email, Password)).Item2;
                 result = await Instance.GetDataAsync(Token, name);
             }
 
@@ -251,13 +340,13 @@ namespace DataBase
 
         public static ReturnCode AddData(string name, string description, string text)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = Instance.AddData(Token, name, description, text);
             if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
-                Token = Instance.Authorize(Login, Password).Item2;
+                Token = Instance.Login(Email, Password).Item2;
                 result = Instance.AddData(Token, name, description, text);
             }
 
@@ -266,13 +355,13 @@ namespace DataBase
 
         public static async Task<ReturnCode> AddDataAsync(string name, string description, string text)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = await Instance.AddDataAsync(Token, name, description, text);
             if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
-                Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
+                Token = (await Instance.LoginAsync(Email, Password)).Item2;
                 result = await Instance.AddDataAsync(Token, name, description, text);
             }
 
@@ -281,13 +370,13 @@ namespace DataBase
 
         public static ReturnCode DelData(string name)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = Instance.DelData(Token, name);
             if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
-                Token = Instance.Authorize(Login, Password).Item2;
+                Token = Instance.Login(Email, Password).Item2;
                 result = Instance.DelData(Token, name);
             }
 
@@ -296,13 +385,13 @@ namespace DataBase
 
         public static async Task<ReturnCode> DelDataAsync(string name)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = await Instance.DelDataAsync(Token, name);
             if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
-                Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
+                Token = (await Instance.LoginAsync(Email, Password)).Item2;
                 result = await Instance.DelDataAsync(Token, name);
             }
 
@@ -311,13 +400,13 @@ namespace DataBase
 
         public static ReturnCode EditName(string name, string newname)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = Instance.EditName(Token, name, newname);
             if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
-                Token = Instance.Authorize(Login, Password).Item2;
+                Token = Instance.Login(Email, Password).Item2;
                 result = Instance.EditName(Token, name, newname);
             }
 
@@ -326,13 +415,13 @@ namespace DataBase
 
         public static async Task<ReturnCode> EditNameAsync(string name, string newname)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = await Instance.EditNameAsync(Token, name, newname);
             if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
-                Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
+                Token = (await Instance.LoginAsync(Email, Password)).Item2;
                 result = await Instance.EditNameAsync(Token, name, newname);
             }
 
@@ -341,13 +430,13 @@ namespace DataBase
 
         public static ReturnCode EditDescription(string name, string newdescription)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = Instance.EditDescription(Token, name, newdescription);
             if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
-                Token = Instance.Authorize(Login, Password).Item2;
+                Token = Instance.Login(Email, Password).Item2;
                 result = Instance.EditDescription(Token, name, newdescription);
             }
 
@@ -356,13 +445,13 @@ namespace DataBase
 
         public static async Task<ReturnCode> EditDescriptionAsync(string name, string newdescription)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = await Instance.EditDescriptionAsync(Token, name, newdescription);
             if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
-                Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
+                Token = (await Instance.LoginAsync(Email, Password)).Item2;
                 result = await Instance.EditDescriptionAsync(Token, name, newdescription);
             }
 
@@ -371,13 +460,13 @@ namespace DataBase
 
         public static ReturnCode EditText(string name, string newtext)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = Instance.EditText(Token, name, newtext);
             if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
-                Token = Instance.Authorize(Login, Password).Item2;
+                Token = Instance.Login(Email, Password).Item2;
                 result = Instance.EditText(Token, name, newtext);
             }
 
@@ -386,13 +475,13 @@ namespace DataBase
 
         public static async Task<ReturnCode> EditTextAsync(string name, string newtext)
         {
-            if (!Authorized)
+            if (!(Status == ManagerStatus.Ready))
                 throw new Exception();
 
             var result = await Instance.EditTextAsync(Token, name, newtext);
             if (result == ReturnCode.TokenExpired || result == ReturnCode.TokenDoesntExist)
             {
-                Token = (await Instance.AuthorizeAsync(Login, Password)).Item2;
+                Token = (await Instance.LoginAsync(Email, Password)).Item2;
                 result = await Instance.EditTextAsync(Token, name, newtext);
             }
 
