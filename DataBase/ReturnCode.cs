@@ -13,6 +13,7 @@
         NoEmailToConfirm = 204,
         TokenDoesntExist = 205,
         TokenExpired = 206,
+        TooManyRecoverRequests = 207,
         DataAlreadyExists = 300,
         DataDoesntExist = 301,
         NoConnection = 400
