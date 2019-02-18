@@ -134,6 +134,50 @@ namespace DataBase
             return new Tuple<ReturnCode, string[]>(result.Item1, result.Item2.ToArray());
         }
 
+        public static Tuple<ReturnCode, string[]> GetDescriptions(string token)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("@token", token);
+            var result = ExecuteGet("GetDescriptions", parameters);
+
+            if (result.Item1 != ReturnCode.Success)
+                return new Tuple<ReturnCode, string[]>(result.Item1, null);
+            return new Tuple<ReturnCode, string[]>(result.Item1, result.Item2.ToArray());
+        }
+
+        public static async Task<Tuple<ReturnCode, string[]>> GetDescriptionsAsync(string token)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("@token", token);
+            var result = await ExecuteGetAsync("GetDescriptions", parameters);
+
+            if (result.Item1 != ReturnCode.Success)
+                return new Tuple<ReturnCode, string[]>(result.Item1, null);
+            return new Tuple<ReturnCode, string[]>(result.Item1, result.Item2.ToArray());
+        }
+
+        public static Tuple<ReturnCode, string[]> GetText(string token)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("@token", token);
+            var result = ExecuteGet("GetText", parameters);
+
+            if (result.Item1 != ReturnCode.Success)
+                return new Tuple<ReturnCode, string[]>(result.Item1, null);
+            return new Tuple<ReturnCode, string[]>(result.Item1, result.Item2.ToArray());
+        }
+
+        public static async Task<Tuple<ReturnCode, string[]>> GetTextAsync(string token)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("@token", token);
+            var result = await ExecuteGetAsync("GetText", parameters);
+
+            if (result.Item1 != ReturnCode.Success)
+                return new Tuple<ReturnCode, string[]>(result.Item1, null);
+            return new Tuple<ReturnCode, string[]>(result.Item1, result.Item2.ToArray());
+        }
+
         public static Tuple<ReturnCode, string, string> GetData(string token, string name)
         {
             var parameters = new Dictionary<string, string>();

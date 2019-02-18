@@ -35,6 +35,66 @@ namespace DataBase
             return result;
         }
 
+        public static Tuple<ReturnCode, string[]> GetDescriptions()
+        {
+            if (Status != ManagerStatus.Ready)
+                throw new Exception();
+
+            var result = Instance.GetDescriptions(Token);
+            if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
+            {
+                Token = Instance.Login(Email, Password).Item2;
+                result = Instance.GetDescriptions(Token);
+            }
+
+            return result;
+        }
+
+        public static async Task<Tuple<ReturnCode, string[]>> GetDescriptionsAsync()
+        {
+            if (Status != ManagerStatus.Ready)
+                throw new Exception();
+
+            var result = await Instance.GetDescriptionsAsync(Token);
+            if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
+            {
+                Token = (await Instance.LoginAsync(Email, Password)).Item2;
+                result = await Instance.GetDescriptionsAsync(Token);
+            }
+
+            return result;
+        }
+
+        public static Tuple<ReturnCode, string[]> GetText()
+        {
+            if (Status != ManagerStatus.Ready)
+                throw new Exception();
+
+            var result = Instance.GetText(Token);
+            if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
+            {
+                Token = Instance.Login(Email, Password).Item2;
+                result = Instance.GetText(Token);
+            }
+
+            return result;
+        }
+
+        public static async Task<Tuple<ReturnCode, string[]>> GetTextAsync()
+        {
+            if (Status != ManagerStatus.Ready)
+                throw new Exception();
+
+            var result = await Instance.GetTextAsync(Token);
+            if (result.Item1 == ReturnCode.TokenExpired || result.Item1 == ReturnCode.TokenDoesntExist)
+            {
+                Token = (await Instance.LoginAsync(Email, Password)).Item2;
+                result = await Instance.GetTextAsync(Token);
+            }
+
+            return result;
+        }
+
         public static Tuple<ReturnCode, string, string> GetData(string name)
         {
             if (Status != ManagerStatus.Ready)
