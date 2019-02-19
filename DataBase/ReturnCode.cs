@@ -16,6 +16,7 @@
         TooManyRecoverRequests = 207,
         DataAlreadyExists = 300,
         DataDoesntExist = 301,
+        StorageLimitAchieved = 302,
         NoConnection = 400,
         Busy = 401
     }
