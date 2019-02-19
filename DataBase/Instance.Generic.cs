@@ -17,7 +17,9 @@ namespace DataBase
                 DataSource = "notepadonline.database.windows.net",
                 InitialCatalog = "NotepadOnlineDatabase",
                 Password = "comm0np@ss",
-                UserID = "common"
+                UserID = "common",
+                Encrypt = true,
+                TrustServerCertificate = false
             };
 
             connection = new SqlConnection(builder.ConnectionString);
