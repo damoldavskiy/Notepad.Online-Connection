@@ -267,7 +267,14 @@ namespace DataBase
             if (Status != ManagerStatus.Ready)
                 throw new Exception();
 
-            return Instance.ChangePassword(Email, Password, newpassword);
+            var result = Instance.ChangePassword(Email, Password, newpassword);
+
+            if (result == ReturnCode.Success)
+            {
+                Password = newpassword;
+            }
+
+            return result;
         }
 
         public static async Task<ReturnCode> ChangePasswordAsync(string newpassword)
@@ -275,7 +282,14 @@ namespace DataBase
             if (Status != ManagerStatus.Ready)
                 throw new Exception();
 
-            return await Instance.ChangePasswordAsync(Email, Password, newpassword);
+            var result = await Instance.ChangePasswordAsync(Email, Password, newpassword);
+
+            if (result == ReturnCode.Success)
+            {
+                Password = newpassword;
+            }
+
+            return result;
         }
     }
 }
