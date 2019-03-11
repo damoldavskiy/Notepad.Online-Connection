@@ -266,6 +266,9 @@ namespace DataBase
         {
             if (Status != ManagerStatus.Ready)
                 throw new Exception();
+            
+            if (!IsPasswordValid(newpassword))
+                return ReturnCode.IllegalPassword;
 
             var result = Instance.ChangePassword(Email, Password, newpassword);
 
@@ -281,6 +284,9 @@ namespace DataBase
         {
             if (Status != ManagerStatus.Ready)
                 throw new Exception();
+
+            if (!IsPasswordValid(newpassword))
+                return ReturnCode.IllegalPassword;
 
             var result = await Instance.ChangePasswordAsync(Email, Password, newpassword);
 
