@@ -19,7 +19,7 @@ namespace DataBase
                 case ReturnCode.UserAlreadyExists:
                     return "User with given e-mail already exists";
                 case ReturnCode.UserDoesntExist:
-                    return "User with given e-mail and password doesn't exists";
+                    return "User with given e-mail and password doesn't exist";
                 case ReturnCode.ConfirmCodeExpired:
                     return "Confirmation code expired";
                 case ReturnCode.WrongConfirmCode:
