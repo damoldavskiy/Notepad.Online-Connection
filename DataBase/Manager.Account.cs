@@ -297,5 +297,16 @@ namespace DataBase
 
             return result;
         }
+
+        public static void Logout()
+        {
+            if (Status == ManagerStatus.Idle)
+                throw new Exception();
+
+            Email = null;
+            Password = null;
+            Token = null;
+            Status = ManagerStatus.Idle;
+        }
     }
 }
