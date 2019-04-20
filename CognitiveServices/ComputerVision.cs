@@ -43,8 +43,10 @@ namespace CognitiveServices
             byte[] data = new byte[stream.Length];
             stream.Read(data, 0, data.Length);
 
-            var headers = new Dictionary<string, string>();
-            headers.Add("Ocp-Apim-Subscription-Key", "e84b8e5786bc441d93818cb2a55d265a");
+            var headers = new Dictionary<string, string>
+            {
+                { "Ocp-Apim-Subscription-Key", "e84b8e5786bc441d93818cb2a55d265a" }
+            };
 
             var result = await Rest.PostAsync(url, type, headers, data);
 

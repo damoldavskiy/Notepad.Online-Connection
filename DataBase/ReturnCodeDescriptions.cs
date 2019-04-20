@@ -9,39 +9,39 @@ namespace DataBase
             switch (code)
             {
                 case ReturnCode.Success:
-                    return "Successful operation.";
+                    return Resource.Success;
                 case ReturnCode.IllegalEmail:
-                    return "Email is not correct.";
+                    return Resource.IllegalEmail;
                 case ReturnCode.IllegalPassword:
-                    return "Password is not correct.";
+                    return Resource.IllegalPassword;
                 case ReturnCode.IllegalConfirmCode:
-                    return "Confirmation code is not correct.";
+                    return Resource.IllegalConfirmCode;
                 case ReturnCode.UserAlreadyExists:
-                    return "User with given e-mail already exists.";
+                    return Resource.UserAlreadyExists;
                 case ReturnCode.UserDoesntExist:
-                    return "User with given e-mail and password doesn't exist.";
+                    return Resource.UserDoesntExist;
                 case ReturnCode.ConfirmCodeExpired:
-                    return "Confirmation code expired.";
+                    return Resource.ConfirmCodeExpired;
                 case ReturnCode.WrongConfirmCode:
-                    return "Wrong confirmation code.";
+                    return Resource.WrongConfirmCode;
                 case ReturnCode.NoEmailToConfirm:
-                    return "User to confirm not found.";
+                    return Resource.NoEmailToConfirm;
                 case ReturnCode.TokenDoesntExist:
-                    return "Token doesn't exist.";
+                    return Resource.TokenDoesntExist;
                 case ReturnCode.TokenExpired:
-                    return "Token expired.";
+                    return Resource.TokenExpired;
                 case ReturnCode.TooManyRecoverRequests:
-                    return "Too many recover requests.";
+                    return Resource.TooManyRecoverRequests;
                 case ReturnCode.DataAlreadyExists:
-                    return "Data with given name already exists.";
+                    return Resource.DataAlreadyExists;
                 case ReturnCode.DataDoesntExist:
-                    return "Data with given name doesn't exist.";
+                    return Resource.DataDoesntExist;
                 case ReturnCode.StorageLimitAchieved:
-                    return "Storage limit achieved.";
+                    return Resource.StorageLimitAchieved;
                 case ReturnCode.NoConnection:
-                    return "No connection to server.";
+                    return Resource.NoConnection;
                 case ReturnCode.Busy:
-                    return "Process is busy.";
+                    return Resource.Busy;
                 default:
                     throw new Exception();
             }

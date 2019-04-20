@@ -33,15 +33,19 @@ namespace CognitiveServices
             var url = "https://northeurope.api.cognitive.microsoft.com/text/analytics/v2.0/languages";
             var type = "application/json";
 
-            var root = new Root();
-            root.documents = new Document[text.Length];
+            var root = new Root
+            {
+                documents = new Document[text.Length]
+            };
             for (int i = 0; i < text.Length; i++)
                 root.documents[i] = new Document() { id = (i + 1).ToString(), text = text[i] };
 
             var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(root, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
 
-            var headers = new Dictionary<string, string>();
-            headers.Add("Ocp-Apim-Subscription-Key", "f42769a504004f089d278301e7068ae0");
+            var headers = new Dictionary<string, string>
+            {
+                { "Ocp-Apim-Subscription-Key", "f42769a504004f089d278301e7068ae0" }
+            };
 
             var result = await Rest.PostAsync(url, type, headers, data);
 
@@ -61,15 +65,19 @@ namespace CognitiveServices
             var url = "https://northeurope.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases";
             var type = "application/json";
 
-            var root = new Root();
-            root.documents = new Document[text.Length];
+            var root = new Root
+            {
+                documents = new Document[text.Length]
+            };
             for (int i = 0; i < text.Length; i++)
                 root.documents[i] = new Document() { language = languages[i], id = (i + 1).ToString(), text = text[i] };
 
             var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(root, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
 
-            var headers = new Dictionary<string, string>();
-            headers.Add("Ocp-Apim-Subscription-Key", "f42769a504004f089d278301e7068ae0");
+            var headers = new Dictionary<string, string>
+            {
+                { "Ocp-Apim-Subscription-Key", "f42769a504004f089d278301e7068ae0" }
+            };
 
             var result = await Rest.PostAsync(url, type, headers, data);
 
